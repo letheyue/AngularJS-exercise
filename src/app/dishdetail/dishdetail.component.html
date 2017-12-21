@@ -6,25 +6,25 @@
     fxLayoutGap="10px" 
     fxLayoutGap.xs="0">
 
-    <div fxFlex="40">
-      <md-card *ngIf="dish">
-        <md-card-header>
-          <md-card-title>
-            <h3>{{dish.name | uppercase}}</h3>
-          </md-card-title>
-        </md-card-header>
-        <img md-card-image src={{dish.image}} alt={{dish.name}}>
-        <md-card-content>
-          <p>{{dish.description}}
-          </p>
-        </md-card-content>
-        <md-card-actions>
-          <button md-button (click)="goBack()">BACK</button>
-          <button md-button>LIKE</button>
-          <button md-button>SHARE</button>
-        </md-card-actions>
-      </md-card>
-    </div>
+  <div fxFlex="40">
+    <md-card *ngIf="dish">
+      <md-card-header>
+        <md-card-title>
+          <h3>{{dish.name | uppercase}}</h3>
+        </md-card-title>
+      </md-card-header>
+      <img md-card-image src={{dish.image}} alt={{dish.name}}>
+      <md-card-content>
+        <p>{{dish.description}}
+        </p>
+      </md-card-content>
+      <md-card-actions>
+        <button md-button (click)="goBack()">BACK</button>
+        <button md-button>LIKE</button>
+        <button md-button>SHARE</button>
+      </md-card-actions>
+    </md-card>
+  </div>
 
   <div fxFlex="40">
     <md-list *ngIf="dish">
@@ -35,6 +35,10 @@
         <p md-line> -- {{comment.author}} {{comment.date | date:'mediumDate'}} </p> 
       </md-list-item>
     </md-list>
+  </div>
+
+  <div [hidden]="dish">
+    <md-spinner></md-spinner><h4>Loading . . . Please Wait</h4>
   </div>
 
 </div>
