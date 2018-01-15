@@ -3,6 +3,7 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Comment } from '../shared/comment';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
@@ -12,7 +13,20 @@ import 'rxjs/add/operator/switchmap';
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
-  styleUrls: ['./dishdetail.component.scss']
+  styleUrls: ['./dishdetail.component.scss'],
+  animations: [
+    trigger('visibility', [
+        state('shown', style({
+            transform: 'scale(1.0)',
+            opacity: 1
+        })),
+        state('hidden', style({
+            transform: 'scale(0.5)',
+            opacity: 0
+        })),
+        transition('* => *', animate('0.5s ease-in-out'))
+    ])
+  ]
 })
 
 export class DishdetailComponent implements OnInit {
@@ -29,6 +43,8 @@ export class DishdetailComponent implements OnInit {
     'comment': '',
   };
   errMess: string;
+  visibility = 'shown';
+  
 
   validationMessages = {
     'author': {
@@ -50,9 +66,10 @@ export class DishdetailComponent implements OnInit {
 
   ngOnInit() {
     this.dishservice.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
-    this.route.params.switchMap((params: Params) => this.dishservice.getDish(+params['id']))
-    .subscribe(dish => {this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id)},
-    errmess => this.errMess = <any>errmess);
+    this.route.params
+    .switchMap((params: Params) => { this.visibility = 'hidden'; return this.dishservice.getDish(+params['id']); })
+    .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); this.visibility = 'shown'; },
+        errmess => { this.dish = null; this.errMess = <any>errmess; });
   }
 
   setPrevNext(dishId: number) {
@@ -96,12 +113,12 @@ export class DishdetailComponent implements OnInit {
   onSubmit() {
     this.comment = this.commentForm.value;
     const rating = this.comment.rating;
-    if (rating === undefined) {
+    if (rating === undefined) { 
       this.comment.rating = 5;
     }
     this.comment.date = (new Date()).toISOString();
     this.dishcopy.comments.push(this.comment);
-    this.dishcopy.save().subscribe();
+    this.dishcopy.save().subscribe(dish => this.dish = dish);
     console.log(this.comment);
     this.commentForm.reset({
       author: '',
